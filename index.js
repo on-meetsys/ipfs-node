@@ -48,7 +48,7 @@ async function main()
 
   let tosend = 0;
   setInterval(async () => {
-    const peers = await ipfs.pubsub.peers('i2kn');
+    const peers = await ipfs.pubsub.peers('mypubsub');
     console.log('pubsub peers : %o', peers);
 
     const msg = new TextEncoder().encode(tosend++);
