@@ -49,7 +49,7 @@ async function main()
   let tosend = 0;
   setInterval(async () => {
     const peers = await ipfs.pubsub.peers('mypubsub');
-    console.log('pubsub peers : %o', peers);
+    console.log('pubsub peers : %o', peers.length);
 
     const msg = new TextEncoder().encode(tosend++);
     await ipfs.pubsub.publish('mypubsub', msg);
