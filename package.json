@@ -1,0 +1,12 @@
+{
+  "name": "test-ipfs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:on-meetsys/test-ipfs.git",
+  "author": "olivier nerot <olivier.nerot@meetsys.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@libp2p/pubsub-peer-discovery": "^6.0.2",
+    "ipfs": "^0.64.0"
+  }
+}
