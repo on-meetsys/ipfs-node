@@ -28,6 +28,9 @@ async function main()
     connectionProtector: new PreSharedKeyConnectionProtector({
       psk: new Uint8Array(Buffer.from(swarmKey, 'base64')),
     }),
+    nat: {
+      enabled: false,
+    },
   };
 
   const bootstrap = [];
