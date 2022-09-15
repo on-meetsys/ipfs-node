@@ -2,7 +2,7 @@ const os = require('os');
 const path = require('path');
 const uint8ArrayToString = require('uint8arrays/to-string').toString;
 const uint8ArrayConcat = require('uint8arrays/concat').concat;
-const CID = require('multiformats/cid');
+const { CID } = require('multiformats/cid');
 
 async function main()
 {
@@ -21,7 +21,7 @@ async function main()
     pubsub: new GossipSub({
       allowPublishToZeroPeers: true,
       fallbackToFloodsub: true,
-      emitSelf: false,
+      emitSelf: true,
       maxInboundStreams: 64,
       maxOutboundStreams: 128,
     }),
@@ -39,7 +39,7 @@ async function main()
 
   ipfs = await createIpfs({
     libp2p: p2pOptions,
-    repo: path.join(os.homedir(), '.testipfs'),
+    repo: path.join(os.homedir(), '.ipfs-'+myPeerId.toString()),
     config: {
       Bootstrap: bootstrap,
     },
