@@ -21,7 +21,7 @@ async function main()
     pubsub: new GossipSub({
       allowPublishToZeroPeers: true,
       fallbackToFloodsub: true,
-      emitSelf: true,
+      emitSelf: false,
       maxInboundStreams: 64,
       maxOutboundStreams: 128,
     }),
@@ -74,7 +74,7 @@ async function main()
   });
 
   await ipfs.pubsub.subscribe('ipfsdagmsg', async (msg) => {
-    console.log('got dag message : %o', msg.from.toString(), msg.data);
+    console.log('got dag message : %o', msg.from.toString(), uint8ArrayToString(msg.data));
 
     // read dag
     const cid = CID.parse(uint8ArrayToString(msg.data));
