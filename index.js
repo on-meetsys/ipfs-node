@@ -9,9 +9,27 @@ async function main()
   const { createEd25519PeerId } = await import('@libp2p/peer-id-factory');
   const { PreSharedKeyConnectionProtector } = await import('libp2p/pnet');
   const { GossipSub } = await import('@chainsafe/libp2p-gossipsub');
+  const { createFromPrivKey } = await import('@libp2p/peer-id-factory');
+  const { unmarshalPrivateKey } = await import('@libp2p/crypto/keys');
   const createIpfs = (await import('ipfs')).create;
 
-  const myPeerId = await createEd25519PeerId();
+  const privkeyC = "CAESQFtFT7hyKfs6YL0v9Yw+GzlvoGymxiQPb8MYGTMvWqykbmFnrir2XblTT5NnMS+FqFNHnOYCOgspxI/bmR9FCFY=";
+  const privkeyJ = "CAESQCinZzMaWWhwmbYfp1t6WRfG+xvoU98nMHwioM3wYVIqL8mPg7EOqjgkT+aITabiReIZo4lUyLo+kI0fWFDxIz4=";
+  const privkeyM = "CAESQKaSEkS9k36q1M59NxlncioI4t6BLEqIs2E0fQwJZlXyXoP3JVfj9lz31CXPIUZKE7U2efgYW13yqeGvNWKmnKg=";
+  const privkeyO = "CAESQPHWqKGMjLXlHyoYYEfdHznhYXwmxi2dUPcUCiM4pinDMzAc8OmstdPJ4DPqzdv/y3QFS9yI0SOFijO43J919gw=";
+  
+  const bootstrap = [];
+  // const bootstrap = [
+  //   '/ip4/5.51.172.39/tcp/4002/p2p/12D3KooWDGBWhPTs1wjtDNeghXtA59CdGZXBvWGP4AnMj8ZphYbD',
+  //   '/ip4/5.51.172.39/tcp/4002/p2p/12D3KooWDGBWhPTs1wjtDNeghXtA59CdGZXBvWGP4AnMj8ZphYbD',
+  //   '/ip4/5.51.172.39/tcp/4003/ws/p2p/12D3KooWDGBWhPTs1wjtDNeghXtA59CdGZXBvWGP4AnMj8ZphYbD',
+  // ];
+
+  const privKey = Buffer.from(privkeyO, 'base64');
+  const PK = await unmarshalPrivateKey(new Uint8Array(privKey));
+  
+  // const myPeerId = await createEd25519PeerId();
+  const myPeerId = await createFromPrivKey(PK);
   console.log('my peerId:',myPeerId.toString());
 
   const swarmKey = 'L2tleS9zd2FybS9wc2svMS4wLjAvCi9iYXNlMTYvCjZkMDBmNjA3MDc2ZTE3NTM0NzZhMDk3MWQ3NDAzNmViZDU5YTI4NDQ4YjNkZGFmOTAwZTYzYjJhZDc4MjgzOGI';
@@ -33,14 +51,7 @@ async function main()
     },
   };
 
-  const bootstrap = [];
-  // const bootstrap = [
-  //   '/ip4/5.51.172.39/tcp/4002/p2p/xxx',
-  //   '/ip4/5.51.172.39/tcp/4002/p2p/xxx',
-  //   '/ip4/5.51.172.39/tcp/4003/ws/p2p/xxx',
-  // ];
-
-  ipfs = await createIpfs({
+  const ipfs = await createIpfs({
     libp2p: p2pOptions,
     repo: path.join(os.homedir(), '.ipfs-'+myPeerId.toString()),
     config: {
