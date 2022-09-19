@@ -4,6 +4,7 @@ const uint8ArrayToString = require('uint8arrays/to-string').toString;
 const uint8ArrayConcat = require('uint8arrays/concat').concat;
 const { CID } = require('multiformats/cid');
 
+
 async function main()
 {
   const { createEd25519PeerId } = await import('@libp2p/peer-id-factory');
@@ -11,14 +12,26 @@ async function main()
   const { GossipSub } = await import('@chainsafe/libp2p-gossipsub');
   const { createFromPrivKey } = await import('@libp2p/peer-id-factory');
   const { unmarshalPrivateKey } = await import('@libp2p/crypto/keys');
+  const { generateKey } = await import('libp2p/pnet');
   const createIpfs = (await import('ipfs')).create;
 
+  // create a new PrivKey base64 encoded
+  // const pid = await createEd25519PeerId();
+  // console.log(pid.toString());
+  // const enc = Buffer.from(pid.privateKey).toString('base64');
+  // console.log(enc);
+  // const dec = Buffer.from(enc, 'base64');
+  // console.log(dec);
+  // const PK = await unmarshalPrivateKey(new Uint8Array(dec));
+
   // base64 encoded private keys
-  const privkeyC = "CAESQFtFT7hyKfs6YL...lTT5NnMS+FqFNHnOYCOgsR9FCFY=";
-  const privkeyJ = "CAESQCinZzMaWWhwmb...EOqjgkT+aITabZo4lUyfWFDxIz4=";
-  const privkeyM = "CAESQKaSEkS9k36q1M...z31CXPIUZKE7U2efgYWvNWKmnKg=";
-  const privkeyO = "CAESQPHWqKGMjLXlHy...zdv/y3QFS9yI0SOFijO43J919gw=";
+  const privkeyC = "CAESQFtFT7hyKfs6YL0v9Yw+GzlvoGymxiQPb8MYGTMvWqykbmFnrir2XblTT5NnMS+FqFNHnOYCOgspxI/bmR9FCFY=";
+  const privkeyJ = "CAESQCinZzMaWWhwmbYfp1t6WRfG+xvoU98nMHwioM3wYVIqL8mPg7EOqjgkT+aITabiReIZo4lUyLo+kI0fWFDxIz4=";
+  const privkeyM = "CAESQKaSEkS9k36q1M59NxlncioI4t6BLEqIs2E0fQwJZlXyXoP3JVfj9lz31CXPIUZKE7U2efgYW13yqeGvNWKmnKg=";
+  const privkeyO = "CAESQPHWqKGMjLXlHyoYYEfdHznhYXwmxi2dUPcUCiM4pinDMzAc8OmstdPJ4DPqzdv/y3QFS9yI0SOFijO43J919gw=";
   
+  const privKey = privkeyO;
+
   // for main node
   const bootstrap = [];
 
@@ -29,15 +42,21 @@ async function main()
   //   '/ip4/xx.xx.xx.xx/tcp/4003/ws/p2p/XXX',
   // ];
 
-  const privKey = Buffer.from(privkeyO, 'base64');
-  const PK = await unmarshalPrivateKey(new Uint8Array(privKey));
+  const privKeyBuffer = Buffer.from(privKey, 'base64');
+  const PK = await unmarshalPrivateKey(new Uint8Array(privKeyBuffer));
   
   // const myPeerId = await createEd25519PeerId();
   const myPeerId = await createFromPrivKey(PK);
   console.log('my peerId:',myPeerId.toString());
 
+  // create swarmkey
+  const swarmKeyUint = new Uint8Array(95);
+  generateKey(swarmKeyUint);
+  const swarmKeyString = Buffer.from(swarmKeyUint).toString('base64');
+  console.log('swarmKey ',swarmKeyString);
+
   // base64 encoded swarmKey 
-  const swarmKey = 'L2tleS9zd2FybS9wc2sv...AwZTYzYjJhZDc4MjgzOGI';
+  const swarmKey = 'L2tleS9zd2FybS9wc2svMS4wLjAvCi9iYXNlMTYvCmM1YTY1NjNiOWY3NTlhNmIzNWIwNzE0OGUxOTQ0MjE1N2ZjMGQ5MTA5Mjk3NjNlNjY1NzBkNmJhYjY5YWMxZTk=';
 
   const p2pOptions = {
     peerId: myPeerId,
@@ -61,7 +80,15 @@ async function main()
     repo: path.join(os.homedir(), '.ipfs-'+myPeerId.toString()),
     config: {
       Bootstrap: bootstrap,
+      Identity: {
+        peerId: myPeerId.toString(),
+        PrivKey: privKey,
+      }
     },
+    init: {
+      allowNew: true,
+      privateKey: privKey,
+    }
   });
 
   const libp2p = ipfs.libp2p;
