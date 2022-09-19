@@ -88,6 +88,10 @@ async function main()
     init: {
       allowNew: true,
       privateKey: privKey,
+    },
+    preload: {
+      enabled: false,
+      addresses: []
     }
   });
 
