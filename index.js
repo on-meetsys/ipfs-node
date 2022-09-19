@@ -139,9 +139,13 @@ async function main()
 
   let nfile = 0;
   setInterval(async () => {
-    // show connected peers
+    // show pubsub peers
     const peers = await ipfs.pubsub.peers('ipfsfilemsg');
-    peers.forEach((p)=> console.log('peer : ', p.toString()));
+    peers.forEach((p)=> console.log('pubsub peer : ', p.toString()));
+
+    // show swarm peers
+    const speers = await ipfs.swarm.peers();
+    speers.forEach((p) => console.log('swarm peer : ', p.peer.toString()));
 
     // put file content
     const resfile = await ipfs.add(myPeerId.toString()+' ipfs file #' + nfile);
