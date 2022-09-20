@@ -70,9 +70,9 @@ async function main()
     connectionProtector: new PreSharedKeyConnectionProtector({
       psk: new Uint8Array(Buffer.from(swarmKey, 'base64')),
     }),
-    nat: {
-      enabled: false,
-    },
+    // nat: {
+    //   enabled: false,
+    // },
   };
 
   const ipfs = await createIpfs({
@@ -83,7 +83,24 @@ async function main()
       Identity: {
         peerId: myPeerId.toString(),
         PrivKey: privKey,
-      }
+      },
+      Addresses: {
+        Swarm: [
+          '/ip4/0.0.0.0/tcp/4002',
+          '/ip4/127.0.0.1/tcp/4003/ws',
+        ],
+        Announce: [],
+        NoAnnounce: [],
+        API: '/ip4/127.0.0.1/tcp/5002',
+        Gateway: '/ip4/127.0.0.1/tcp/9090',
+        RPC: '/ip4/127.0.0.1/tcp/5003',
+        Delegates: [
+          // '/dns4/node0.delegate.ipfs.io/tcp/443/https',
+          // '/dns4/node1.delegate.ipfs.io/tcp/443/https',
+          // '/dns4/node2.delegate.ipfs.io/tcp/443/https',
+          // '/dns4/node3.delegate.ipfs.io/tcp/443/https'
+        ],
+      },
     },
     init: {
       allowNew: true,
