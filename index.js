@@ -170,16 +170,16 @@ async function main()
 
   },10000);
 
-  setInterval(async () => {
-    // await ipfs.pubsub.unsubscribe('ipfsfilemsg');
-    // await ipfs.pubsub.unsubscribe('ipfsdagmsg');
-    ipfsStopped = true;
-    await ipfs.stop();
-    console.log('ipfs stopped');
-    await ipfs.start();
-    ipfsStopped = false;
-    console.log('ipfs started');
-  }, 20000);
+  // setInterval(async () => {
+  //   // await ipfs.pubsub.unsubscribe('ipfsfilemsg');
+  //   // await ipfs.pubsub.unsubscribe('ipfsdagmsg');
+  //   ipfsStopped = true;
+  //   await ipfs.stop();
+  //   console.log('ipfs stopped');
+  //   await ipfs.start();
+  //   ipfsStopped = false;
+  //   console.log('ipfs started');
+  // }, 20000);
 
 }
 
