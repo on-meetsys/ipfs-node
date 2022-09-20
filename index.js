@@ -126,6 +126,31 @@ async function main()
     console.log( 'peer:disconnect', remotePeer.toString());
   });
 
+  await ipfs.pubsub.subscribe('ipfsfilemsg2', async (msg) => {
+
+    console.log('got file message : ', msg.from.toString(), uint8ArrayToString(msg.data));
+
+    const cid = CID.parse(uint8ArrayToString(msg.data));
+
+    //read file
+    const chunks = [];
+    for await (const chunk of ipfs.cat(cid)) {
+      chunks.push(chunk);
+    }
+    const content = uint8ArrayToString(uint8ArrayConcat(chunks));
+    console.log('got file : ', content);
+  });
+
+
+  await ipfs.pubsub.subscribe('ipfsdagmsg2', async (msg) => {
+    console.log('got dag message : %o', msg.from.toString(), uint8ArrayToString(msg.data));
+
+    // read dag
+    const cid = CID.parse(uint8ArrayToString(msg.data));
+    const result = await ipfs.dag.get(cid);
+    console.log('got dag : ', result.value);
+  });
+
   // 2 subscribe => 2 events ?
   // await ipfs.pubsub.subscribe('ipfsfilemsg', (msg) => {
   //   console.log('got message : ', msg.from.toString(), uint8ArrayToString(msg.data));
@@ -169,31 +194,6 @@ async function main()
   setInterval(async () => {
     // await ipfs.pubsub.unsubscribe('ipfsfilemsg');
     // await ipfs.pubsub.unsubscribe('ipfsdagmsg');
-
-    await ipfs.pubsub.subscribe('ipfsfilemsg', async (msg) => {
-
-      console.log('got file message : ', msg.from.toString(), uint8ArrayToString(msg.data));
-  
-      const cid = CID.parse(uint8ArrayToString(msg.data));
-  
-      //read file
-      const chunks = [];
-      for await (const chunk of ipfs.cat(cid)) {
-        chunks.push(chunk);
-      }
-      const content = uint8ArrayToString(uint8ArrayConcat(chunks));
-      console.log('got file : ', content);
-    });
-  
-  
-    await ipfs.pubsub.subscribe('ipfsdagmsg', async (msg) => {
-      console.log('got dag message : %o', msg.from.toString(), uint8ArrayToString(msg.data));
-  
-      // read dag
-      const cid = CID.parse(uint8ArrayToString(msg.data));
-      const result = await ipfs.dag.get(cid);
-      console.log('got dag : ', result.value);
-    });
 
     // ipfsStopped = true;
     // await ipfs.stop();
