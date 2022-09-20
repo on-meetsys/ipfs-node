@@ -126,7 +126,10 @@ async function main()
     console.log( 'peer:disconnect', remotePeer.toString());
   });
 
-  await ipfs.pubsub.subscribe('ipfsfilemsg2', async (msg) => {
+  await ipfs.pubsub.unsubscribe('ipfsfilemsg');
+  await ipfs.pubsub.unsubscribe('ipfsdagmsg');
+
+  await ipfs.pubsub.subscribe('ipfsfilemsg', async (msg) => {
 
     console.log('got file message : ', msg.from.toString(), uint8ArrayToString(msg.data));
 
@@ -142,7 +145,7 @@ async function main()
   });
 
 
-  await ipfs.pubsub.subscribe('ipfsdagmsg2', async (msg) => {
+  await ipfs.pubsub.subscribe('ipfsdagmsg', async (msg) => {
     console.log('got dag message : %o', msg.from.toString(), uint8ArrayToString(msg.data));
 
     // read dag
