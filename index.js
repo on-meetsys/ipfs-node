@@ -37,9 +37,9 @@ async function main()
 
   // for other nodes
   // const bootstrap = [
-  //   '/ip4/xx.xx.xx.xx/tcp/4002/p2p/XXX',
-  //   '/ip4/xx.xx.xx.xx/tcp/4002/p2p/XXX',
-  //   '/ip4/xx.xx.xx.xx/tcp/4003/ws/p2p/XXX',
+  //   '/ip4/5.51.172.39/tcp/4002/p2p/12D3KooWDGBWhPTs1wjtDNeghXtA59CdGZXBvWGP4AnMj8ZphYbD',
+  //   '/ip4/5.51.172.39/tcp/4002/p2p/12D3KooWDGBWhPTs1wjtDNeghXtA59CdGZXBvWGP4AnMj8ZphYbD',
+  //   '/ip4/5.51.172.39/tcp/4003/ws/p2p/12D3KooWDGBWhPTs1wjtDNeghXtA59CdGZXBvWGP4AnMj8ZphYbD',
   // ];
 
   const privKeyBuffer = Buffer.from(privKey, 'base64');
