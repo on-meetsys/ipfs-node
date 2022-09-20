@@ -14,8 +14,17 @@ async function main()
   const { unmarshalPrivateKey } = await import('@libp2p/crypto/keys');
   const { generateKey } = await import('libp2p/pnet');
 
-  const { MemoryDatastore } = await import('datastore-core');
-  const { MemoryBlockstore } = await import('blockstore-core');
+  const { BaseDatastore, MemoryDatastore } = await import('datastore-core');
+  const { BaseBlockstore } = await import('blockstore-core');
+
+  const { FsDatastore } = await import('datastore-fs')
+  const { LevelDatastore } = await import('datastore-level')
+  const { BlockstoreDatastoreAdapter } = await import('blockstore-datastore-adapter')
+  const { ShardingDatastore } = await import('datastore-core/sharding')
+  const { NextToLast } = await import('datastore-core/shard')
+  const { FSLock } = await import('ipfs-repo/locks/fs')
+  const { MountDatastore } = await import('datastore-core/mount')
+  const { Key } = await import('interface-datastore/key')
 
   const { createRepo } = await import('ipfs-repo');
   const { MemoryLock } = await import('ipfs-repo/locks/memory');
@@ -83,15 +92,31 @@ async function main()
     // },
   };
 
+  const repoPath = path.join(os.homedir(), '.ipfs-'+myPeerId.toString());
+
   const repo = createRepo(
     '',
     async () => rawCodec,
     {
-      blocks: new MemoryBlockstore(),
+      // root: new MemoryDatastore()
+      // blocks: new MemoryDatastore(),
+      // datastore: new MemoryDatastore(),
+      // keys: new MemoryDatastore(),
+      // pins: new MemoryDatastore(),
+      root: new FsDatastore(repoPath, {
+        extension: ''
+      }),
+      blocks: new BlockstoreDatastoreAdapter(
+        new ShardingDatastore(
+          new FsDatastore(`${repoPath}/blocks`, {
+            extension: '.data'
+          }),
+          new NextToLast(2)
+        )
+      ),
       datastore: new MemoryDatastore(),
-      keys: new MemoryDatastore(),
-      pins: new MemoryDatastore(),
-      root: new MemoryDatastore()
+      keys: new FsDatastore(`${repoPath}/keys`),
+      pins: new LevelDatastore(`${repoPath}/pins`)
     },
     { autoMigrate: false, repoLock: MemoryLock, repoOwner: true }
   );
