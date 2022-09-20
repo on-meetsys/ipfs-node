@@ -94,6 +94,8 @@ async function main()
 
   const repoPath = path.join(os.homedir(), '.ipfs-'+myPeerId.toString());
 
+  // from https://github.com/ipfs/js-ipfs/issues/2751
+  // and node_modules/ipfs-core-config/src/repo.js (line 50)
   const repo = createRepo(
     '',
     async () => rawCodec,
@@ -123,8 +125,8 @@ async function main()
 
   const ipfs = await createIpfs({
     libp2p: p2pOptions,
-    // repo: path.join(os.homedir(), '.ipfs-'+myPeerId.toString()),
-    repo,
+    // repo: path.join(os.homedir(), '.ipfs-'+myPeerId.toString()), // BUG
+    repo, // NO MORE BUG
     config: {
       Bootstrap: bootstrap,
       Identity: {
