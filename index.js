@@ -60,13 +60,13 @@ async function main()
 
   const p2pOptions = {
     peerId: myPeerId,
-    // pubsub: new GossipSub({
-    //   allowPublishToZeroPeers: true,
-    //   fallbackToFloodsub: true,
-    //   emitSelf: false,
-    //   maxInboundStreams: 64,
-    //   maxOutboundStreams: 128,
-    // }),
+    pubsub: new GossipSub({
+      allowPublishToZeroPeers: true,
+      fallbackToFloodsub: true,
+      emitSelf: false,
+      maxInboundStreams: 64,
+      maxOutboundStreams: 128,
+    }),
     connectionProtector: new PreSharedKeyConnectionProtector({
       psk: new Uint8Array(Buffer.from(swarmKey, 'base64')),
     }),
