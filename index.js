@@ -56,17 +56,17 @@ async function main()
   console.log('swarmKey ',swarmKeyString);
 
   // base64 encoded swarmKey 
-  const swarmKey = 'L2tleS9zd2FybS9wc2svMS4wLjAvCi9iYXNlMTYvCmM1YTY1NjNiOWY3NTlhNmIzNWIwNzE0OGUxOTQ0MjE1N2ZjMGQ5MTA5Mjk3NjNlNjY1NzBkNmJhYjY5YWMxZTk=';
+  const swarmKey = 'L2tleS9zd2FybS9wc2svMS4wLjAvCi9iYXNlMTYvCjA1OTQ1NGQxNzAwNmIzM2NmYmVlNDgwM2QxOTk3YTYxODc4N2I4MzQ3YjVhOGVjM2YzMzVkNWE2NWU4MTU2YmI=';
 
   const p2pOptions = {
     peerId: myPeerId,
-    pubsub: new GossipSub({
-      allowPublishToZeroPeers: true,
-      fallbackToFloodsub: true,
-      emitSelf: false,
-      maxInboundStreams: 64,
-      maxOutboundStreams: 128,
-    }),
+    // pubsub: new GossipSub({
+    //   allowPublishToZeroPeers: true,
+    //   fallbackToFloodsub: true,
+    //   emitSelf: false,
+    //   maxInboundStreams: 64,
+    //   maxOutboundStreams: 128,
+    // }),
     connectionProtector: new PreSharedKeyConnectionProtector({
       psk: new Uint8Array(Buffer.from(swarmKey, 'base64')),
     }),
@@ -90,8 +90,8 @@ async function main()
       privateKey: privKey,
     },
     preload: {
-      enabled: false,
-      addresses: []
+      enabled: true,
+      addresses: bootstrap,
     }
   });
 
@@ -110,6 +110,7 @@ async function main()
   });
 
   await ipfs.pubsub.subscribe('ipfsfilemsg', async (msg) => {
+
     console.log('got file message : ', msg.from.toString(), uint8ArrayToString(msg.data));
 
     const cid = CID.parse(uint8ArrayToString(msg.data));
@@ -122,6 +123,7 @@ async function main()
     const content = uint8ArrayToString(uint8ArrayConcat(chunks));
     console.log('got file : ', content);
   });
+
 
   await ipfs.pubsub.subscribe('ipfsdagmsg', async (msg) => {
     console.log('got dag message : %o', msg.from.toString(), uint8ArrayToString(msg.data));
@@ -165,7 +167,15 @@ async function main()
 
   },10000);
 
-  console.log(await ipfs.bootstrap.list());
+  setInterval(async () => {
+    // await ipfs.pubsub.unsubscribe('ipfsfilemsg');
+    // await ipfs.pubsub.unsubscribe('ipfsdagmsg');
+    await ipfs.stop();
+    console.log('ipfs stopped');
+    await ipfs.start();
+    console.log('ipfs started');
+  }, 20000);
+
 }
 
 main();
