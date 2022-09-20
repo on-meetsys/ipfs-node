@@ -140,6 +140,7 @@ async function main()
   // });
 
   let nfile = 0;
+  let ipfsStopped = false;
   setInterval(async () => {
     // show pubsub peers
     const peers = await ipfs.pubsub.peers('ipfsfilemsg');
@@ -149,8 +150,8 @@ async function main()
     const speers = await ipfs.swarm.peers();
     speers.forEach((p) => console.log('swarm peer : ', p.peer.toString()));
 
-    if (ipfs.isOnline == false) return;
-    
+    if (ipfsStopped) return;
+
     // put file content
     const resfile = await ipfs.add(myPeerId.toString()+' ipfs file #' + nfile);
     console.log('save ipfs : ', resfile.path);
@@ -172,9 +173,11 @@ async function main()
   setInterval(async () => {
     // await ipfs.pubsub.unsubscribe('ipfsfilemsg');
     // await ipfs.pubsub.unsubscribe('ipfsdagmsg');
+    ipfsStopped = true;
     await ipfs.stop();
     console.log('ipfs stopped');
     await ipfs.start();
+    ipfsStopped = false;
     console.log('ipfs started');
   }, 20000);
 
