@@ -149,6 +149,8 @@ async function main()
     const speers = await ipfs.swarm.peers();
     speers.forEach((p) => console.log('swarm peer : ', p.peer.toString()));
 
+    if (ipfs.isOnline == false) return;
+    
     // put file content
     const resfile = await ipfs.add(myPeerId.toString()+' ipfs file #' + nfile);
     console.log('save ipfs : ', resfile.path);
