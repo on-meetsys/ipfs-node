@@ -3,7 +3,7 @@ const path = require('path');
 const uint8ArrayToString = require('uint8arrays/to-string').toString;
 const uint8ArrayConcat = require('uint8arrays/concat').concat;
 const { CID } = require('multiformats/cid');
-
+const rawCodec = require('multiformats/codecs/raw');
 
 async function main()
 {
@@ -13,6 +13,14 @@ async function main()
   const { createFromPrivKey } = await import('@libp2p/peer-id-factory');
   const { unmarshalPrivateKey } = await import('@libp2p/crypto/keys');
   const { generateKey } = await import('libp2p/pnet');
+
+  const { MemoryDatastore } = await import('datastore-core');
+  const { MemoryBlockstore } = await import('blockstore-core');
+
+  const { createRepo } = await import('ipfs-repo');
+  const { MemoryLock } = await import('ipfs-repo/locks/memory');
+  // const {rawCodec} = await import('multiformats/codecs/raw');
+
   const createIpfs = (await import('ipfs')).create;
 
   // create a new PrivKey base64 encoded
@@ -75,9 +83,23 @@ async function main()
     // },
   };
 
+  const repo = createRepo(
+    '',
+    async () => rawCodec,
+    {
+      blocks: new MemoryBlockstore(),
+      datastore: new MemoryDatastore(),
+      keys: new MemoryDatastore(),
+      pins: new MemoryDatastore(),
+      root: new MemoryDatastore()
+    },
+    { autoMigrate: false, repoLock: MemoryLock, repoOwner: true }
+  );
+
   const ipfs = await createIpfs({
     libp2p: p2pOptions,
-    repo: path.join(os.homedir(), '.ipfs-'+myPeerId.toString()),
+    // repo: path.join(os.homedir(), '.ipfs-'+myPeerId.toString()),
+    repo,
     config: {
       Bootstrap: bootstrap,
       Identity: {
