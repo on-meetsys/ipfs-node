@@ -64,7 +64,7 @@ async function main()
   
   // const myPeerId = await createEd25519PeerId();
   const myPeerId = await createFromPrivKey(PK);
-  console.log('my peerId:',myPeerId.toString());
+  console.log('my peerId:', myPeerId.toString());
 
   // create swarmkey
   const swarmKeyUint = new Uint8Array(95);
@@ -97,14 +97,9 @@ async function main()
   // from https://github.com/ipfs/js-ipfs/issues/2751
   // and node_modules/ipfs-core-config/src/repo.js (line 50)
   const repo = createRepo(
-    '',
+    repoPath,
     async () => rawCodec,
     {
-      // root: new MemoryDatastore()
-      // blocks: new MemoryDatastore(),
-      // datastore: new MemoryDatastore(),
-      // keys: new MemoryDatastore(),
-      // pins: new MemoryDatastore(),
       root: new FsDatastore(repoPath, {
         extension: ''
       }),
@@ -116,7 +111,7 @@ async function main()
           new NextToLast(2)
         )
       ),
-      datastore: new MemoryDatastore(),
+      datastore: new LevelDatastore(`${repoPath}/datastore`), // MODIFIED : NO BUG
       keys: new FsDatastore(`${repoPath}/keys`),
       pins: new LevelDatastore(`${repoPath}/pins`)
     },
@@ -143,12 +138,7 @@ async function main()
         API: '/ip4/127.0.0.1/tcp/5002',
         Gateway: '/ip4/127.0.0.1/tcp/9090',
         RPC: '/ip4/127.0.0.1/tcp/5003',
-        Delegates: [
-          // '/dns4/node0.delegate.ipfs.io/tcp/443/https',
-          // '/dns4/node1.delegate.ipfs.io/tcp/443/https',
-          // '/dns4/node2.delegate.ipfs.io/tcp/443/https',
-          // '/dns4/node3.delegate.ipfs.io/tcp/443/https'
-        ],
+        Delegates: bootstrap,
       },
     },
     init: {
