@@ -111,7 +111,8 @@ async function main()
           new NextToLast(2)
         )
       ),
-      datastore: new LevelDatastore(`${repoPath}/datastore`), // MODIFIED : NO BUG
+      datastore: new LevelDatastore(`${repoPath}/datastore`), // BUG
+      // datastore: new MemoryDatastore(), // NO BUG
       keys: new FsDatastore(`${repoPath}/keys`),
       pins: new LevelDatastore(`${repoPath}/pins`)
     },
@@ -121,7 +122,7 @@ async function main()
   const ipfs = await createIpfs({
     libp2p: p2pOptions,
     // repo: path.join(os.homedir(), '.ipfs-'+myPeerId.toString()), // BUG
-    repo, // NO MORE BUG
+    repo, // NO BUG
     config: {
       Bootstrap: bootstrap,
       Identity: {
